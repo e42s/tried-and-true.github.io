@@ -1,0 +1,38 @@
+什么是Map Reduce？
+
+现如今，提到大数据，就肯定会提Hadoop，提Hadoop肯定绕不开Map Reduce。有
+五岁小朋友就说了，他看了网上很多介绍Map Reduce的文章，根本就不知道都在
+说什么。
+
+我：Minecraft视频，你是怎么保存本地MP4的，比如有些网站只有HLS，
+没有MP4，怎么办？
+
+他：很简单啊。
+
+ffmpeg -i http://example.com/minecraft.m3u8 -c copy -bsf:a aac_adtstoasc minecraft.mp4
+
+假如需要保存成mp4流，还需要加上这些参数
+
+-movflags frag_keyframe+empty_moov+default_base_moof
+
+我：假如转换过程中，其中的片段可能会下载失败，该怎么办？
+
+他：可以先全下载好再调用ffmpeg。比如可以先存到一个临时文件，等完全下载
+好了，再mv过去。在Linux上，open有个flag叫O_TMPFILE，用这个可以省去删除
+下载失败的临时文件的麻烦。我有个下载脚本，不管是因为中间网络断了退出了，
+还是机器重启了，只要不断运行，一直到有一次运行成功，那所有片段都下载好
+了，到这时就可以运行ffmpeg了。
+
+我：这就是你的Map Reduce了。
+
+他：哪里Map，哪里Reduce了？
+
+我：你看Map的部分是完全没有相互影响的，只要带宽足够完全可以同时运行的，
+无非Hadoop里是计算，你这里是下载，因为这个可能会失败，重试代价比把结果
+存下来高，所以我们把结果存下来，供后续Reduce使用。而你这里的ffmpeg就是
+Reduce了。
+
+他：听起来像那么回事。姑且信你一回。不过，我有一个问题，既然计算代价更
+大，为什么不叫大计算，而叫大数据呢？
+
+我：被你问倒了。这我还真不知道。
