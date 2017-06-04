@@ -1,0 +1,17 @@
+Paxos算法
+
+Paxos算法的核心是非常简单的。proposer只有在某一轮收到过半acceptor的
+accepted消息，才知道这一次决议是什么。而另一个proposer，在发出更高轮的
+accept请求之前，必须得到过半acceptor的promise。根据抽屉原理，其中至少
+有一个acceptor向前一个proposer发出过accepted消息，因为在发出高轮的
+promise之后，acceptor不会再响应低轮的accept请求。所以，prepare请求必然
+是在accepted发出之后到达的。于是后一个proposer看到的最高accepted的值，
+就是前一个proposer看到的决议的值。所以此后所有accepted的值不会再发生改
+变了。
+
+状态机每一步操作对应一次决议。proposer只要按顺序获得决议就可以了。保存
+太久的日志不仅占用空间，而且可能会导致回放需要太长时间。状态机可以定时
+snapshot，而每个节点可以把已知所有节点最早的snapshot之前的日志都丢掉。
+因为proposer和acceptor逻辑上是分离的，加入新的节点，实质上是加入新的
+acceptor。proposer是可以有任意多个的。新的节点要加入，只需要proposer把
+自己加进去就可以了，并不需要额外的机制。
